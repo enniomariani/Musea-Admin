@@ -1,0 +1,80 @@
+body {
+    margin: 0;
+    padding: 0;
+    /*overflow: hidden; !* hide scroll bar*!*/
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: var(--font-family-default);
+    font-style: var(--font-style-default);
+    font-weight: var(--font-weight-default);
+    font-size: var(--font-size-default);
+    line-height: var(--line-height-default);
+
+    color: var(--color-main);
+}
+
+/*default-font if not overridden by theme.json*/
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900; /* Supports all weights */
+    src: url('../fonts/InterVariable.woff2') format('woff2')
+}
+
+/* Default theme variables (baseline). JS may override these at runtime */
+:root {
+    --color-background: #231F20;
+    --color-main: white;
+    --color-btn-secondary: #202020;
+
+    --color-status-green: #00DA30;
+    --color-status-red: #FC3D2F;
+    --color-status-red-rgb: 252, 61, 47;
+
+    --color-popup: white;
+    --color-on-popup:#231F20;
+
+    --color-slider-bg: rgba(255,255,255,0.7);
+    --color-slider: white;
+
+    --color-primary-50: #EDF4FC;
+    --color-primary-50-hover: #DBE9F9;
+    --color-primary-500-base: #4A90E2;
+    --color-primary-500-base-rgb: 74, 144, 226;
+    --color-on-primary-500-base: white;
+    --color-primary-800: #1E3B5D;
+    --color-primary-800-hover: #101E30;
+    --color-on-primary-800: white;
+
+    --color-secondary-50: #F2F2F2;
+    --color-on-secondary-50: #231F20;
+
+    --color-secondary-100: #EDEDEF;
+    --color-on-secondary-100: #231F20;
+    --color-secondary-300: #B1B1B1;
+    --color-secondary-400: #979797;
+    --color-secondary-500-base: #7D7D7D;
+    --color-secondary-600: #646464;
+    --color-secondary-700: #4B4B4B;
+    --color-secondary-700-hover: #424242;
+    --color-secondary-800: #323232;
+    --color-secondary-800-hover: #2B2B2B;
+    --color-on-secondary-800: white;
+
+    --font-family-default: 'Inter', sans-serif;
+    --font-size-default: 18px;
+    --font-style-default: normal;
+    --font-weight-default: 400;
+    --line-height-default: 130%;
+
+    --font-size-medium: 16px;
+    --font-size-small: 14px;
+
+    --radius-default: 12px;
+    --radius-popup: 12px;
+}

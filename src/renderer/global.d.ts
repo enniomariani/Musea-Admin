@@ -1,0 +1,17 @@
+export {};
+
+declare global {
+    interface Window {
+        backend:IBackend;
+    }
+
+    interface IBackend {
+        loadSettings():IBackendData;
+    }
+
+    interface IBackendData {
+        pathToDataFolder: string;
+        json: any;
+        errorsInJson: string;
+    }
+}

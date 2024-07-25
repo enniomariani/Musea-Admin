@@ -1,0 +1,72 @@
+{
+  "colors": {
+    "colorBackground": "#231F20",
+    "colorMain": "white",
+    "colorBtnSecondary": "#202020",
+
+    "statusGreen": "#00DA30",
+    "statusRed": "#FC3D2F",
+    "statusRedRgb": "252, 61, 47",
+
+    "popup": "white",
+    "onPopup": "#231F20",
+
+    "sliderBg": "rgba(255,255,255,0.7)",
+    "slider": "white",
+
+    "primary50": "#EDF4FC",
+    "primary50Hover": "#DBE9F9",
+
+    "primary500Base": "#4A90E2",
+    "primary500BaseRgb": "74, 144, 226",
+    "onPrimary500Base": "white",
+
+    "primary800": "#1E3B5D",
+    "primary800Hover": "#101E30",
+    "onPrimary800": "white",
+
+    "secondary50": "#F2F2F2",
+    "onSecondary50": "#231F20",
+
+    "secondary100": "#EDEDEF",
+    "onSecondary100": "#231F20",
+    "secondary300": "#B1B1B1",
+
+    "secondary500Base": "#7D7D7D",
+    "secondary600": "#646464",
+
+    "secondary700": "#4B4B4B",
+    "secondary700Hover": "#424242",
+
+    "secondary800": "#323232",
+    "secondary800Hover": "#2B2B2B",
+    "onSecondary800": "white"
+  },
+  "fonts": {
+    "default": {
+      "family": "Inter, sans-serif",
+      "size": "18px",
+      "lineHeight": "130%",
+      "style": "normal",
+      "weight": "400"
+    },
+    "sizeMedium": "16px",
+    "sizeSmall": "14px",
+    "faces": [
+      {
+        "family": "Inter, sans-serif",
+        "src": "./daten/theme/fonts/InterVariable.woff2",
+        "format": "woff2",
+        "weight": "400",
+        "style": "normal"
+      }
+    ]
+  },
+  "radius": {
+    "default": "12px",
+    "popup": "12px"
+  },
+  "assets": {
+    "logo": "path-to-logo"
+  }
+}

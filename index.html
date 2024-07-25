@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self' ws:;media-src 'self' blob: file:; img-src 'self' data:; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'"/>
+    <meta http-equiv="X-Content-Security-Policy"
+          content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self' ws:;media-src 'self' blob: file:; img-src 'self' data:; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'"/>
+
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <title>Musea Admin</title>
+</head>
+
+<body>
+<script src="src/renderer/renderer.js" type="module"></script>
+</body>
+</html>
