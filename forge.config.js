@@ -24,7 +24,7 @@ export default {
                     name: 'musea-admin'
                 },
                 authToken: process.env.GITHUB_TOKEN,
-                prerelease: true
+                prerelease: false
             }
         }
     ],
