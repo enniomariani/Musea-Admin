@@ -86,8 +86,9 @@ export async function syncMediaStation(): Promise<void> {
 
     await $('#syncBtn').click();
 
-    //wait until the media-station screen is shown
-    await $('#infoText').waitForDisplayed({reverse: true});
+    await browser.pause(process.env.CI === 'true' ? 2000 : 500);
+
+    await $('#infoText').waitForDisplayed({reverse: true, timeout: 120000});
     console.log("Test / Sync MediaStation complete.");
 }
 
