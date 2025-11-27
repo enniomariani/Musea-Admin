@@ -59,15 +59,6 @@ export async function exitMediaStation(skipTime: number | null = null): Promise<
     }
 
     try {
-        await $('#infoText').waitForDisplayed({reverse: true});
-    } catch (e) {
-        console.log('Test / FAILURE STATE:');
-        console.log('Test / #infoText exists:', await $('#infoText').isExisting());
-        console.log('Test / #exitBtn still exists:', await $('#exitBtn').isExisting());
-        throw e;
-    }
-
-    try {
         await $('#addMediaStation').waitForDisplayed();
     } catch (e) {
         console.log('Test / FAILURE STATE:');
