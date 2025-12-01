@@ -2,7 +2,7 @@
   "name": "musea-admin",
   "author": "Ennio Mariani",
   "email": "mail@enniomariani.ch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "App for organizing and managing media files within Musea media players",
   "type": "module",
   "main": "./build/main/main.js",
