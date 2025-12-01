@@ -53,11 +53,11 @@ export const i18n = createI18n({
                 mediaPlayerAdmin: 'Verwaltung',
 
                 addMediaPlayer: 'Medien Player hinzufügen',
-                insertNameOfMediaPlayer: 'Name des Medien Player eingeben',
-                insertIpOfMediaPlayer: 'IP-Adresse des Medien Player eingeben',
+                insertNameOfMediaPlayer: 'Name des Medien Players eingeben',
+                insertIpOfMediaPlayer: 'IP-Adresse des Medien Players eingeben',
                 renameMediaPlayer: 'Medien Player umbenennen',
-                insertNewNameForMediaPlayer: 'Neuen Namen des Medien Player eingeben',
-                insertNewIpForMediaPlayer: 'Neue IP-Adresse des Medien Player eingeben',
+                insertNewNameForMediaPlayer: 'Neuen Namen des Medien Players eingeben',
+                insertNewIpForMediaPlayer: 'Neue IP-Adresse des Medien Players eingeben',
                 changesAreOnlyPossibleIfControllerIsReachable:'Änderungen an anderen Medien Playern sind nur möglich, wenn der Controller erreichbar ist.',
 
                 checkConnDownloadAppInformation: '\n\nLade Informationen der anderen Medien Player herunter... ',
