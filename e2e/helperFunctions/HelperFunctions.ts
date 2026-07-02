@@ -71,7 +71,7 @@ export async function initWSS(): Promise<void> {
         wss = null;
     }
 
-    wss = new WebSocketServer({port: 5000, host: '127.0.0.1'});
+    wss = new WebSocketServer({port: 8001, host: '127.0.0.1'});
     receivedCommandHistory = [];
 
     wss.on('connection', (ws) => {
