@@ -1,7 +1,7 @@
 import {readFileSync} from "fs";
 
 
-export class LoadSettingsFile{
+export class LoadJSON {
     constructor() {
     }
 
