@@ -4,7 +4,9 @@ import {MockCreateGlobalSettings} from "__mocks__/renderer/models/globaSettings/
 import {GlobalSettings} from "renderer/models/globalSettings/GlobalSettings";
 
 const mockBackend: jest.Mocked<IBackend> = {
-    loadSettings: jest.fn()
+    loadSettings: jest.fn(),
+    loadTheme: jest.fn(),
+    getResourcePath: jest.fn()
 };
 
 let globalSettings:GlobalSettings;

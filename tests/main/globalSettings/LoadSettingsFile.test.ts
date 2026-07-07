@@ -1,8 +1,8 @@
 import {beforeEach, describe, expect, it, beforeAll, afterAll, jest, afterEach} from "@jest/globals";
 import {writeFileSync, mkdirSync, rmdirSync, rmSync} from 'fs';
-import {LoadSettingsFile} from "main/globalSettings/LoadSettingsFile.js";
+import {LoadJSON} from "main/LoadJSON.js";
 
-let loadSettingsFileTest:LoadSettingsFile = new LoadSettingsFile();
+let loadSettingsFileTest:LoadJSON = new LoadJSON();
 
 let testDirName:string = "__testDir";
 let deleteTestDirAfterTests:boolean = true;
@@ -34,7 +34,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-    loadSettingsFileTest = new LoadSettingsFile();
+    loadSettingsFileTest = new LoadJSON();
 });
 
 afterEach(() =>{

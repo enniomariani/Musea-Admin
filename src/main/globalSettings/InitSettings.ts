@@ -1,6 +1,6 @@
 import {ipcMain} from "electron";
 import {join} from "path";
-import {LoadSettingsFile} from "main/globalSettings/LoadSettingsFile.js";
+import {LoadJSON} from "../LoadJSON.js";
 import {ValidateSettingsJson} from "main/globalSettings/ValidateSettingsJson.js";
 import {ValidationError, ValidatorResult} from "jsonschema";
 import {GlobalSettings} from "main/globalSettings/GlobalSettings.js";
@@ -16,7 +16,7 @@ export class InitSettings {
      * loads the settings.txt file, sets the global settings and overrides the values of the global settings with the values found in the settings-file
      */
     init(pathToDataFolder:string):any{
-        let loadSettingsFile: LoadSettingsFile = new LoadSettingsFile();
+        let loadSettingsFile: LoadJSON = new LoadJSON();
         let jsonValidation: ValidateSettingsJson = new ValidateSettingsJson();
         let settingsJSON: any = null;
         let filePath: string
