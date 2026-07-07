@@ -54,7 +54,7 @@ export class MainApp {
     }
 
     async start(){
-        await loadTheme();
+        await loadTheme(window.backend);
 
         await this._modelMain.loadSettings();
         await this._modelMain.initFrameWork();
