@@ -46,6 +46,11 @@ app.whenReady().then(async () => {
         return loadJSON.loadJSONSync(join(pathToDataFolder, 'theme', 'theme.json'));
     });
 
+    ipcMain.handle('app:get-resource-path', (event:Electron.IpcMainInvokeEvent, relativePath: string) => {
+        console.log("get res-path: ", process.resourcesPath, pathToDataFolder, relativePath)
+        return join(join(pathToDataFolder, ".."), relativePath);
+    });
+
     const createWindow:CreateWindow = new CreateWindow(windowWidth, windowHeight,allSettingsByName[GlobalSettingsFactory.IS_FULLSCREEN],
         join(_rootDirName, 'preload.js'));
     console.log("Main: load settings-file...");

@@ -138,14 +138,14 @@ function applyThemeVars(theme: Theme) {
     setVar("--logo-path", a.logo);
 }
 
-async function loadFontFaces(fonts?: Theme["fonts"]) {
+async function loadFontFaces(backend:IBackend, fonts?: Theme["fonts"]) {
     if (!fonts?.faces || fonts.faces.length === 0) return;
 
     // Load each face via FontFace API
     const loads = fonts.faces.map(async (face) => {
         try {
             // Resolve the URL relative to the current document (works with file://)
-            const url = new URL(face.src, window.location.href).toString();
+            const url = new URL(await backend.getResourcePath(face.src)).toString();
             const src = face.format ? `url("${url}") format("${face.format}")` : `url("${url}")`;
             const ff = new FontFace(face.family ?? "ThemedFont", src, {
                 weight: face.weight ?? "normal",
@@ -174,7 +174,7 @@ export async function loadTheme(backend:IBackend) {
         applyThemeVars(json);
 
         // Then load and register font faces (non-blocking for initial render)
-        await loadFontFaces(json.fonts).catch(() => {});
+        await loadFontFaces(backend, json.fonts).catch(() => {});
     } catch {
         console.warn("Failed to load theme, use default-css-values in main.css");
     }
