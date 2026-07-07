@@ -167,8 +167,10 @@ export async function loadTheme(backend:IBackend) {
     try {
         const json:any|null = await backend.loadTheme();
 
-        if(json === null)
+        if(json === null){
+            console.warn("Failed to load theme in folder daten/theme, use default-css-values in main.css");
             return; //use CSS-default values if theme does not exist
+        }
 
         // Apply variables first so text size/line-height update early
         applyThemeVars(json);
@@ -176,6 +178,6 @@ export async function loadTheme(backend:IBackend) {
         // Then load and register font faces (non-blocking for initial render)
         await loadFontFaces(backend, json.fonts).catch(() => {});
     } catch {
-        console.warn("Failed to load theme, use default-css-values in main.css");
+        console.warn("Failed to load theme in folder daten/theme, use default-css-values in main.css");
     }
 }
