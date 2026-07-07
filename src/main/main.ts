@@ -1,5 +1,5 @@
 
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import { fileURLToPath } from 'url';
 import { dirname, join} from 'path';
 
@@ -7,6 +7,7 @@ import {CreateWindow} from "main/CreateWindow.js";
 import {GlobalSettingsFactory} from "main/globalSettings/GlobalSettingsFactory.js";
 import {InitSettings} from "main/globalSettings/InitSettings.js";
 import {MuseaClientMain} from "musea-client/main";
+import {LoadJSON} from "./LoadJSON.js";
 
 /**
  * the main.ts is loaded by electron and has access to file-system, etc.
@@ -59,6 +60,11 @@ app.whenReady().then(async () => {
             createWindow.close();
             app.quit();
         }
+    });
+
+    ipcMain.handle('app:load-theme', (event, args) => {
+        let loadJSON: LoadJSON = new LoadJSON();
+        return loadJSON.loadJSONSync(join(pathToDataFolder, 'theme', 'theme.json'));
     });
 
     console.log("Main: start-process finished.");
