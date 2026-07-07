@@ -11,7 +11,7 @@ export class LoadJSON {
      * @param absoluteFilePath
      * @returns {any}  returns a JSON-object if the file was found, if not, returns null
      */
-    loadJSONSync(absoluteFilePath:string):any{
+    loadJSONSync(absoluteFilePath:string): | null{
         let loadedData:string;
         let parsedJSON:any;
 

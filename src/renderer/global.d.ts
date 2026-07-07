@@ -6,7 +6,8 @@ declare global {
     }
 
     interface IBackend {
-        loadSettings():IBackendData;
+        loadSettings():Promise<IBackendData>;
+        loadTheme():Promise<any|null>;
     }
 
     interface IBackendData {

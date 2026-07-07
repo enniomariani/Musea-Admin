@@ -41,6 +41,11 @@ app.whenReady().then(async () => {
 
     allSettingsByName = initSettings.init(pathToDataFolder);
 
+    ipcMain.handle('app:load-theme', (event, args) => {
+        let loadJSON: LoadJSON = new LoadJSON();
+        return loadJSON.loadJSONSync(join(pathToDataFolder, 'theme', 'theme.json'));
+    });
+
     const createWindow:CreateWindow = new CreateWindow(windowWidth, windowHeight,allSettingsByName[GlobalSettingsFactory.IS_FULLSCREEN],
         join(_rootDirName, 'preload.js'));
     console.log("Main: load settings-file...");
@@ -60,11 +65,6 @@ app.whenReady().then(async () => {
             createWindow.close();
             app.quit();
         }
-    });
-
-    ipcMain.handle('app:load-theme', (event, args) => {
-        let loadJSON: LoadJSON = new LoadJSON();
-        return loadJSON.loadJSONSync(join(pathToDataFolder, 'theme', 'theme.json'));
     });
 
     console.log("Main: start-process finished.");

@@ -162,12 +162,13 @@ async function loadFontFaces(fonts?: Theme["fonts"]) {
     await Promise.all(loads);
 }
 
-export async function loadTheme() {
+export async function loadTheme(backend:IBackend) {
 
     try {
-        const res = await fetch("daten/theme/theme.json", { cache: "no-store" });
-        if (!res.ok) return; // keep CSS defaults
-        const json = (await res.json()) as Theme;
+        const json:any|null = await backend.loadTheme();
+
+        if(json === null)
+            return; //use CSS-default values if theme does not exist
 
         // Apply variables first so text size/line-height update early
         applyThemeVars(json);
