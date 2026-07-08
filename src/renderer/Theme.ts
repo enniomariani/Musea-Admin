@@ -174,8 +174,6 @@ export async function loadTheme(backend:IBackend) {
 
         const pathLogo:string = await backend.getResourcePath(json.assets.logo);
 
-        console.log("look for logo here: ", pathLogo)
-
         // Apply variables first so text size/line-height update early
         applyThemeVars(json, pathLogo);
 
