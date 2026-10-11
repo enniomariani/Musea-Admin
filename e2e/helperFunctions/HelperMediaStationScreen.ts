@@ -16,15 +16,17 @@ export async function addMediaStation(name: string, closeBeforeSaving: boolean =
 export async function openMediaStation(id: number): Promise<void> {
     console.log("Test / Open Mediastation: ", id);
 
-    await $('#item' + id.toString()).waitForDisplayed();
+    await $('#item' + id.toString()).waitForClickable();
     //open mediastation
     await $('#item' + id.toString()).click();
     //wait until the content-station screen is shown
-    await $('#addContent').waitForDisplayed();
+    await $('#addContent').waitForClickable();
 }
 
 export async function openMediaPlayerAdmin(mediaStationId: number): Promise<void> {
     console.log("Test / Open media-player Admin for MS-ID: ", mediaStationId)
+
+    await $('#addMediaStation').waitForClickable();
 
     await $('#item' + mediaStationId.toString() + ' #openMediaPlayer').click();
 
@@ -59,7 +61,7 @@ export async function exitMediaStation(skipTime: number | null = null): Promise<
     }
 
     try {
-        await $('#addMediaStation').waitForDisplayed();
+        await $('#addMediaStation').waitForClickable();
     } catch (e) {
         console.log('Test / FAILURE STATE:');
         console.log('Test / #addMediaStation exists:', await $('#addMediaStation').isExisting());
@@ -68,7 +70,7 @@ export async function exitMediaStation(skipTime: number | null = null): Promise<
     }
 
     try{
-        await $('#item0').waitForDisplayed();
+        await $('#item0').waitForClickable();
     } catch(e){
         console.log('Test / FAILURE STATE:');
         console.log('Test / #addMediaStation exists:', await $('#addMediaStation').isExisting());
@@ -95,5 +97,5 @@ export async function syncMediaStation(): Promise<void> {
 export async function restartApp(): Promise<void> {
     console.log("Test / Restart App");
     await browser.reloadSession();
-    await $('#addMediaStation').waitForDisplayed();
+    await $('#addMediaStation').waitForClickable();
 }

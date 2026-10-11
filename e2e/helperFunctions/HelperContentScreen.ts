@@ -11,7 +11,7 @@ export async function addMediaToMediaPlayerWithId(mediaPlayerId:number, type:str
 export async function removeMediaFromMediaPlayerWithId(mediaPlayerId:number): Promise<void> {
     console.log("Test / Remove media from media player with id:" +  mediaPlayerId)
     await $('#item'+ mediaPlayerId.toString() +' #optionsBtn').click();
-    await $('#option0').waitForDisplayed();
+    await $('#option0').waitForClickable();
 
     await $('#option0').click();
     await $('#option0').waitForDisplayed({reverse:true});

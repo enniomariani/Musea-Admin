@@ -1,4 +1,3 @@
-import {browser} from 'wdio-electron-service';
 import {after} from "mocha";
 import {
     expectReceivedDeleteMediaCommands, removeAllSavedFiles,
@@ -12,7 +11,7 @@ import {
     openMediaStation, restartApp, syncMediaStation
 } from "./helperFunctions/HelperMediaStationScreen.js";
 import {addMediaPlayer} from "./helperFunctions/HelperMediaPlayerScreen.js";
-import {addContent, clickBackBtn} from "./helperFunctions/HelperFolderScreen.js";
+import {addContent, clickBackBtn, openContent} from "./helperFunctions/HelperFolderScreen.js";
 
 process.env.TEST = 'true';
 
@@ -47,8 +46,7 @@ async function setup(ipController: string, doAddContent: boolean, idReturnedFrom
         await addContent("Test-Content 1");
         await addContent("Test-Content 2");
 
-        await $('#item0').click();
-        await $('#addMediaBtn').waitForDisplayed();
+        await openContent(0);
     }
 }
 
@@ -82,8 +80,7 @@ describe("New scenario: add image to content with 2 media-players (one stays emp
         await clickBackBtn("");
 
         //select second content
-        await $('#item1').click();
-        await $('#addMediaBtn').waitForDisplayed();
+        await openContent(1);
 
         await addMediaToMediaPlayerWithId(0, "video");
         await checkMediaEntry(0, "Controller", "test.mp4", "video")
@@ -132,9 +129,7 @@ describe("New scenario: add image and video to BOTH media-players of the content
         resetCommandHistory();
         await openMediaStation(0);
 
-        //open content
-        await $('#item0').click();
-        await $('#addMediaBtn').waitForDisplayed();
+        await openContent(0);
 
         await addMediaToMediaPlayerWithId(0, "image");
         await addMediaToMediaPlayerWithId(1, "video");
@@ -153,8 +148,7 @@ describe("New scenario: add image and video to BOTH media-players of the content
         resetCommandHistory();
         await openMediaStation(0);
 
-        await $('#item0').click();
-        await $('#addMediaBtn').waitForDisplayed();
+        await openContent(0);
 
         await addMediaToMediaPlayerWithId(0, "image");
         await addMediaToMediaPlayerWithId(1, "video");
@@ -162,12 +156,8 @@ describe("New scenario: add image and video to BOTH media-players of the content
         await syncMediaStation();
         await restartApp();
 
-        await $('#item0').click();
-        //wait until the content-station screen is shown
-        await $('#addContent').waitForDisplayed({timeout: 15000});
-
-        await $('#item0').click();
-        await $('#optionsBtn').waitForDisplayed();
+        await openMediaStation(0);
+        await openContent(0);
 
         await removeMediaFromMediaPlayerWithId(0);
         await removeMediaFromMediaPlayerWithId(1);
@@ -180,10 +170,7 @@ describe("New scenario: add image and video to BOTH media-players of the content
     it('there should have been sent two image-delete commands if the image was added, synced, image removed, app closed, reopened, and synced again', async () => {
         resetCommandHistory();
         await openMediaStation(0);
-
-        //open content 0
-        await $('#item0').click();
-        await $('#addMediaBtn').waitForDisplayed();
+        await openContent(0);
 
         //add image to content
         await addMediaToMediaPlayerWithId(0, "image");
@@ -191,10 +178,6 @@ describe("New scenario: add image and video to BOTH media-players of the content
 
         //sync
         await syncMediaStation();
-
-        //open image-options
-        await $('#item0').click();
-        await $('#optionsBtn').waitForDisplayed();
 
         //remove image
         await removeMediaFromMediaPlayerWithId(0);

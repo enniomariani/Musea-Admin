@@ -62,6 +62,24 @@ export async function openFolder(itemIdInList: number): Promise<void> {
 
 /**
  * the id is the list-item-id (including all contents and folders)
+ * @param {number} itemIdInList
+ * @returns {Promise<void>}
+ */
+export async function openContent(itemIdInList: number): Promise<void> {
+    console.log("Test / Open Content. Id of content in the list: ", itemIdInList);
+
+    await $('#item' + itemIdInList.toString()).click();
+
+    const addMediaBtn = $('#addMediaBtn', { strict: false });
+    const optionsBtn = $('#optionsBtn', { strict: false });
+
+    await Promise.any([
+        addMediaBtn.waitForClickable({ timeout: 5000 }),
+        optionsBtn.waitForClickable({ timeout: 5000 }),
+    ]);}
+
+/**
+ * the id is the list-item-id (including all contents and folders)
  * @param {number} id
  * @param {string} newName
  * @param {boolean} closeFirstScreen

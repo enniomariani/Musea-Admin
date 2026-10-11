@@ -1,4 +1,3 @@
-import {browser} from 'wdio-electron-service';
 import {after} from "mocha";
 import {removeAllSavedFiles, setupFunctionalMediaStationCommunication,} from "./helperFunctions/HelperFunctions.js";
 import {
