@@ -3,10 +3,19 @@ import {ModelMain} from "renderer/models/ModelMain.js";
 import {
     FileExtension,
     ImageFileExtension,
-    IMediaPlayerData,
-    MediaType,
+    IMediaPlayerData, iso6392T,
+    MediaType, Subtitle,
     VideoFileExtension
 } from 'musea-client/renderer';
+
+export interface ISubtitlePresenter {
+    lang: string
+    title: string
+}
+
+export type SubtitleState  =
+| { state: "ok" }
+| { state: "wrong-lang-format", subs:ISubtitlePresenter[]};
 
 export class ContentPresenter {
     private _modelMain: ModelMain;
@@ -15,37 +24,68 @@ export class ContentPresenter {
         this._modelMain = modelMain;
     }
 
-    getName(mediaStationId:number, contentId:number):string{
+    getName(mediaStationId: number, contentId: number): string {
         return this._modelMain.museaClient.contentService.getName(mediaStationId, contentId);
     }
 
-    async addVideo(mediaStationId:number, contentId:number, mediaPlayerId:number,duration:number, fileType:string, fileInstance:File, fileName:string):Promise<void>{
-        let extension:VideoFileExtension;
+    /**
+     * add Video to musea-backend
+     *
+     * Check if passed subtitles are conform to ISO6392T - if not Video is saved anyway but without the wrongly formatted subtitles
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaPlayerId
+     * @param {number} duration
+     * @param {string} fileType
+     * @param {File} fileInstance
+     * @param {string} fileName
+     * @param {ISubtitlePresenter[]} subtitles
+     * @returns {Promise<SubtitleState>}
+     */
+    async addVideo(mediaStationId: number, contentId: number, mediaPlayerId: number, duration: number, fileType: string, fileInstance: File, fileName: string, subtitles: ISubtitlePresenter[]): Promise<SubtitleState> {
+        let extension: VideoFileExtension;
+        let subsForMusea: Subtitle[] = [];
+        let wrongSubs:ISubtitlePresenter[] = [];
 
-        if(fileType === "video/mp4")
+        if (fileType === "video/mp4")
             extension = FileExtension.VIDEO.MP4;
         else
-            throw new Error("Wrong file-type: "+ fileType)
+            throw new Error("Wrong file-type: " + fileType)
 
-        await this._modelMain.museaClient.mediaService.addVideoAndCacheIt(mediaStationId, contentId, mediaPlayerId, duration, extension, fileInstance, fileName);
+        subtitles.forEach((sub) => {
+            try {
+                const subTitle:Subtitle = {iso6392T:iso6392T(sub.lang), title:sub.title};
+                subsForMusea.push(subTitle);
+            } catch (e) {
+                wrongSubs.push(sub);
+            }
+        });
+
+        await this._modelMain.museaClient.mediaService.addVideoAndCacheIt(mediaStationId, contentId, mediaPlayerId, duration, extension, fileInstance, fileName, {subtitles:subsForMusea});
         this._modelMain.museaClient.mediaStationService.cacheMediaStation(mediaStationId);
+
+        if(wrongSubs.length > 0)
+            return {state: "wrong-lang-format", subs: wrongSubs};
+
+        return {state: "ok"};
     }
 
-    async addImage(mediaStationId:number, contentId:number, mediaPlayerId:number, fileType:string, fileInstance:File, fileName:string):Promise<void>{
-        let extension:ImageFileExtension;
+    async addImage(mediaStationId: number, contentId: number, mediaPlayerId: number, fileType: string, fileInstance: File, fileName: string): Promise<void> {
+        let extension: ImageFileExtension;
 
-        if(fileType === "image/jpeg")
+        if (fileType === "image/jpeg")
             extension = FileExtension.IMAGE.JPEG;
-        else if(fileType === "image/png")
+        else if (fileType === "image/png")
             extension = FileExtension.IMAGE.PNG;
         else
-            throw new Error("Wrong file-type: "+ fileType)
+            throw new Error("Wrong file-type: " + fileType)
 
         await this._modelMain.museaClient.mediaService.addImageAndCacheIt(mediaStationId, contentId, mediaPlayerId, extension, fileInstance, fileName);
         this._modelMain.museaClient.mediaStationService.cacheMediaStation(mediaStationId);
     }
 
-    async removeMedia(mediaStationId:number, contentId:number, mediaPlayerId:number):Promise<void>{
+    async removeMedia(mediaStationId: number, contentId: number, mediaPlayerId: number): Promise<void> {
         await this._modelMain.museaClient.mediaService.deleteMedia(mediaStationId, contentId, mediaPlayerId);
         this._modelMain.museaClient.mediaStationService.cacheMediaStation(mediaStationId);
     }

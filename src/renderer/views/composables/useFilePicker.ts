@@ -1,7 +1,42 @@
-import { Ref} from 'vue';
+import {Ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import { createFile, MP4BoxBuffer } from "mp4box";
 
-export function useFilePicker(infoText:Ref<string>, onAddMedia:(mediaPlayerId: number, fileType: string, fileInstance: File, fileName: string, duration: number) => Promise<void>) {
+export interface ISubtitle{
+    lang:string
+    title:string
+}
+
+// Reads only the metadata (moov box) of an MP4 and returns its subtitle tracks.
+async function getSubtitleTracks (file: File):Promise<any[] | undefined>  {
+    const mp4 = createFile();
+    const chunk:number = 1024 * 1024;
+    let tracks: any[] | undefined, error: unknown;
+
+    // Fires as soon as mp4box has parsed the moov box (track info),
+    // before the media data itself is read.
+    mp4.onReady = (info) => (tracks = info.subtitleTracks);
+    mp4.onError = (e) => (error = e);
+
+    // Feed the file in chunks and stop as soon as the metadata is parsed.
+    for (let pos = 0; tracks === undefined && !error && pos < file.size; ) {
+        // file.slice() is lazy: only this byte range is read from disk.
+        const buf = await file.slice(pos, pos + chunk).arrayBuffer();
+
+        // fromArrayBuffer tags the chunk with its position in the file (fileStart),
+        // so mp4box knows where it belongs.
+        // appendBuffer returns the next offset mp4box wants. If moov is at the end,
+        // it skips over the huge mdat and jumps straight there.
+        //when the whole moov box was parsed, appendBuffer calls onReady() and passes the info
+        pos = mp4.appendBuffer(MP4BoxBuffer.fromArrayBuffer(buf, pos));
+    }
+    mp4.flush();
+
+    if (error) throw error;
+    return tracks;
+};
+
+export function useFilePicker(infoText: Ref<string>, onAddMedia: (mediaPlayerId: number, fileType: string, fileInstance: File, fileName: string, duration: number, subtitles:ISubtitle[]) => Promise<void>) {
 
     const {t} = useI18n();
 
@@ -33,6 +68,15 @@ export function useFilePicker(infoText:Ref<string>, onAddMedia:(mediaPlayerId: n
                     infoText.value = t('content.openFile') + file.name;
                     infoText.value += t('content.loadingFile');
 
+                    const tracks:any[] | undefined = await getSubtitleTracks(file);
+                    let subtitles:ISubtitle[] = [];
+
+                    if(tracks)
+                        tracks.forEach( (track) =>{
+                            const sub:ISubtitle = {lang: track.language, title:track.name};
+                            subtitles.push(sub);
+                        });
+
                     let duration: number | null = null;
 
                     if (file.type === "video/mp4") {
@@ -46,13 +90,13 @@ export function useFilePicker(infoText:Ref<string>, onAddMedia:(mediaPlayerId: n
                             video.src = "";
                             URL.revokeObjectURL(url);
                             files = null;
-                            await onAddMedia(idToLoadNewMedia, file!.type, file!, file!.name, duration as number);
+                            await onAddMedia(idToLoadNewMedia, file!.type, file!, file!.name, duration as number, subtitles);
                         };
 
                         video.addEventListener("loadedmetadata", onLoadedMetaData);
                         video.src = url;
                     } else
-                        await onAddMedia(idToLoadNewMedia, file.type, file, file.name, null as unknown as number);
+                        await onAddMedia(idToLoadNewMedia, file.type, file, file.name, null as unknown as number, subtitles);
                 } else
                     infoText.value = "";
             } finally {
