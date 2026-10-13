@@ -14,6 +14,7 @@ export function useOverlayManager() {
     const {t} = useI18n();
     const infoText = ref("");
     const showOptions = ref(false);
+    const showTwoBtnPopUp = ref(false);
     const selectedItemName = ref("");
 
     const inputDialogData = ref<IInputDialogData>({
@@ -26,7 +27,7 @@ export function useOverlayManager() {
     });
 
     const hasOverlays = computed(() =>
-        infoText.value !== '' || showOptions.value || inputDialogData.value.show
+        infoText.value !== '' || showOptions.value || inputDialogData.value.show || showTwoBtnPopUp.value
     );
 
     function openInputDialog(title:string, placeHolderText: string, onComplete: (name: string) => void,  text:string = "", saveBtnName: string = t('btnSave')): void {
@@ -38,6 +39,7 @@ export function useOverlayManager() {
 
     function closeAll() {
         showOptions.value = false;
+        showTwoBtnPopUp.value = false;
         inputDialogData.value.show = false;
         closeInfo(0);
     }
@@ -61,6 +63,7 @@ export function useOverlayManager() {
         openInputDialog,
         inputDialogData,
 
+        showTwoBtnPopUp,
         showOptions,
         selectedItemName,
 

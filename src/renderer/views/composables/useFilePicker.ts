@@ -7,6 +7,13 @@ export interface ISubtitle{
     title:string
 }
 
+export interface IMediaInfo{
+    mediaPlayerId: number
+    fileType: string
+    fileInstance: File
+    fileName: string
+}
+
 // Reads only the metadata (moov box) of an MP4 and returns its subtitle tracks.
 async function getSubtitleTracks (file: File):Promise<any[] | undefined>  {
     const mp4 = createFile();
@@ -36,7 +43,9 @@ async function getSubtitleTracks (file: File):Promise<any[] | undefined>  {
     return tracks;
 };
 
-export function useFilePicker(infoText: Ref<string>, onAddMedia: (mediaPlayerId: number, fileType: string, fileInstance: File, fileName: string, duration: number, subtitles:ISubtitle[]) => Promise<void>) {
+export function useFilePicker(infoText: Ref<string>,
+                              onAddImage: (mediaInfo:IMediaInfo) => Promise<void>,
+                              onAddVideo: (mediaInfo:IMediaInfo, duration: number, subtitles:ISubtitle[]) => Promise<void>) {
 
     const {t} = useI18n();
 
@@ -68,18 +77,19 @@ export function useFilePicker(infoText: Ref<string>, onAddMedia: (mediaPlayerId:
                     infoText.value = t('content.openFile') + file.name;
                     infoText.value += t('content.loadingFile');
 
-                    const tracks:any[] | undefined = await getSubtitleTracks(file);
-                    let subtitles:ISubtitle[] = [];
-
-                    if(tracks)
-                        tracks.forEach( (track) =>{
-                            const sub:ISubtitle = {lang: track.language, title:track.name};
-                            subtitles.push(sub);
-                        });
-
-                    let duration: number | null = null;
 
                     if (file.type === "video/mp4") {
+                        const tracks:any[] | undefined = await getSubtitleTracks(file);
+                        let subtitles:ISubtitle[] = [];
+                        let duration: number | null = null;
+
+                        if(tracks) {
+                            tracks.forEach((track) => {
+                                const sub: ISubtitle = {lang: track.language, title: track.name};
+                                subtitles.push(sub);
+                            });
+                        }
+
                         url = URL.createObjectURL(file);
                         video = document.createElement("video");
                         video.preload = "metadata";
@@ -90,13 +100,13 @@ export function useFilePicker(infoText: Ref<string>, onAddMedia: (mediaPlayerId:
                             video.src = "";
                             URL.revokeObjectURL(url);
                             files = null;
-                            await onAddMedia(idToLoadNewMedia, file!.type, file!, file!.name, duration as number, subtitles);
+                            await onAddVideo({mediaPlayerId: idToLoadNewMedia, fileType: file!.type, fileInstance: file!, fileName: file!.name}, duration as number, subtitles);
                         };
 
                         video.addEventListener("loadedmetadata", onLoadedMetaData);
                         video.src = url;
                     } else
-                        await onAddMedia(idToLoadNewMedia, file.type, file, file.name, null as unknown as number, subtitles);
+                        await onAddImage({mediaPlayerId: idToLoadNewMedia, fileType: file.type, fileInstance: file, fileName: file.name});
                 } else
                     infoText.value = "";
             } finally {

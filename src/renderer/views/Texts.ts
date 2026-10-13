@@ -108,8 +108,9 @@ export const i18n = createI18n({
                 openFile: 'Öffne Datei: ',
                 loadingFile: '\nDatei wird geladen...',
                 cachingFile: '\nDatei wird zwischengespeichert...',
-                subtitleLangNotIsoConform: '\nVideo-Datei enthält ungültig benannte Untertitel-Streams: ',
-                infoHowToEmbedSubtitles: '\n\nBeim Einbetten der Untertitel mit FFmpeg muss das Attribut \"language=\" dem ISO-Standard 6392-T entsprechen.'
+                subtitleLangNotIsoConform: 'Video-Datei enthält ungültig benannte Untertitel-Streams: ',
+                infoHowToEmbedSubtitles: '\n\nBeim Einbetten der Untertitel mit FFmpeg muss das Attribut \"language=\" dem ISO-Standard 6392-T entsprechen.',
+                importVideoWithCorrectSubs: '\n\nVideo ohne die fehlerhaften Untertitel importieren?'
             },
 
             //exit to media-station

@@ -13,6 +13,17 @@ export interface ISubtitlePresenter {
     title: string
 }
 
+export interface IVideoPropsPresenter{
+    mediaStationId: number
+    contentId: number
+    mediaPlayerId: number
+    duration: number
+    fileType: string
+    fileInstance: File
+    fileName: string
+    subtitles: ISubtitlePresenter[]
+}
+
 export type SubtitleState  =
 | { state: "ok" }
 | { state: "wrong-lang-format", subs:ISubtitlePresenter[]};
@@ -28,30 +39,53 @@ export class ContentPresenter {
         return this._modelMain.museaClient.contentService.getName(mediaStationId, contentId);
     }
 
+
     /**
      * add Video to musea-backend
      *
      * Check if passed subtitles are conform to ISO6392T - if not Video is saved anyway but without the wrongly formatted subtitles
      *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaPlayerId
-     * @param {number} duration
-     * @param {string} fileType
-     * @param {File} fileInstance
-     * @param {string} fileName
-     * @param {ISubtitlePresenter[]} subtitles
+     * @param {IVideoPropsPresenter} videoProps
      * @returns {Promise<SubtitleState>}
      */
-    async addVideo(mediaStationId: number, contentId: number, mediaPlayerId: number, duration: number, fileType: string, fileInstance: File, fileName: string, subtitles: ISubtitlePresenter[]): Promise<SubtitleState> {
+    async addVideo(videoProps:IVideoPropsPresenter): Promise<SubtitleState> {
         let extension: VideoFileExtension;
         let subsForMusea: Subtitle[] = [];
         let wrongSubs:ISubtitlePresenter[] = [];
 
-        if (fileType === "video/mp4")
+        if (videoProps.fileType === "video/mp4")
             extension = FileExtension.VIDEO.MP4;
         else
-            throw new Error("Wrong file-type: " + fileType)
+            throw new Error("Wrong file-type: " + videoProps.fileType)
+
+        videoProps.subtitles.forEach((sub) => {
+            try {
+                const subTitle:Subtitle = {iso6392T:iso6392T(sub.lang), title:sub.title};
+                subsForMusea.push(subTitle);
+            } catch (e) {
+                wrongSubs.push(sub);
+            }
+        });
+
+        await this._modelMain.museaClient.mediaService.addVideoAndCacheIt(videoProps.mediaStationId, videoProps.contentId, videoProps.mediaPlayerId,
+            videoProps.duration, extension, videoProps.fileInstance, videoProps.fileName, {subtitles:subsForMusea});
+        this._modelMain.museaClient.mediaStationService.cacheMediaStation(videoProps.mediaStationId);
+
+        if(wrongSubs.length > 0)
+            return {state: "wrong-lang-format", subs: wrongSubs};
+
+        return {state: "ok"};
+    }
+
+    /**
+     * check if the passed subtitles are in the correct format for musea-client (lang-attribute must be in ISO6392-T format)
+     *
+     * @param {ISubtitlePresenter[]} subtitles
+     * @returns {SubtitleState}
+     */
+    checkSubs(subtitles: ISubtitlePresenter[]): SubtitleState{
+        let subsForMusea: Subtitle[] = [];
+        let wrongSubs:ISubtitlePresenter[] = [];
 
         subtitles.forEach((sub) => {
             try {
@@ -61,9 +95,6 @@ export class ContentPresenter {
                 wrongSubs.push(sub);
             }
         });
-
-        await this._modelMain.museaClient.mediaService.addVideoAndCacheIt(mediaStationId, contentId, mediaPlayerId, duration, extension, fileInstance, fileName, {subtitles:subsForMusea});
-        this._modelMain.museaClient.mediaStationService.cacheMediaStation(mediaStationId);
 
         if(wrongSubs.length > 0)
             return {state: "wrong-lang-format", subs: wrongSubs};

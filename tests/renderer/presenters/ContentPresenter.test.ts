@@ -1,5 +1,10 @@
 import {beforeEach, describe, expect, it} from "@jest/globals";
-import {ContentPresenter, ISubtitlePresenter, SubtitleState} from "renderer/presenters/ContentPresenter.js";
+import {
+    ContentPresenter,
+    ISubtitlePresenter,
+    IVideoPropsPresenter,
+    SubtitleState
+} from "renderer/presenters/ContentPresenter.js";
 import {IContentMediaInfo} from "renderer/presenters/FolderPresenter.js";
 import {MockModelMain} from "__mocks__/renderer/models/MockModelMain.js";
 import {IMediaPlayerData, iso6392T, MediaType, Subtitle} from "musea-client/renderer";
@@ -120,39 +125,60 @@ describe("addImage() ", () => {
 });
 
 describe("addVideo() ", () => {
-    const mediaStationId: number = 1;
-    const contentId: number = 3;
-    const mediaPlayerId: number = 1;
-    const subtitles:ISubtitlePresenter[] = [{lang: "deu", title: "Deutsch"}, {lang: "eng", title: "Englisch"}];
-    const fileName:string = "fileName.xy";
-    const fileInstance:File = new File([], fileName);
+    let videoProps:IVideoPropsPresenter ={
+        mediaStationId: 1,
+        contentId: 3,
+        mediaPlayerId: 1,
+        subtitles: [{lang: "deu", title: "Deutsch"}, {lang: "eng", title: "Englisch"}],
+        fileName: "fileName.xy",
+        fileInstance: new File([], "fileName.xy"),
+        duration: 102,
+        fileType: "video/mp4"
+    }
 
     it("should call the museaClient.addVideoAndCacheIt with correct parameters and extension if filetype is video/mp4", async () => {
         const correctlyMappedSubs:Subtitle[] = [{iso6392T: iso6392T("deu"), title: "Deutsch"}, {iso6392T: iso6392T("eng"), title: "Englisch"}];
-        await presenter.addVideo(mediaStationId, contentId, mediaPlayerId, 102, "video/mp4", fileInstance, fileName, subtitles);
+        await presenter.addVideo(videoProps);
         expect(mockModelMain.museaClient.mediaService.addVideoAndCacheIt).toHaveBeenCalledTimes(1);
-        expect(mockModelMain.museaClient.mediaService.addVideoAndCacheIt).toHaveBeenCalledWith(mediaStationId, contentId, mediaPlayerId, 102, "mp4", fileInstance, fileName, {subtitles: correctlyMappedSubs});
+        expect(mockModelMain.museaClient.mediaService.addVideoAndCacheIt).toHaveBeenCalledWith(videoProps.mediaStationId, videoProps.contentId,
+            videoProps.mediaPlayerId, videoProps.duration, "mp4", videoProps.fileInstance, videoProps.fileName, {subtitles: correctlyMappedSubs});
     });
 
     it("should return state OK if subtitles have the correct format", async () => {
-        const state:SubtitleState = await presenter.addVideo(mediaStationId, contentId, mediaPlayerId, 102, "video/mp4", fileInstance, fileName, subtitles);
+        const state:SubtitleState = await presenter.addVideo(videoProps);
         expect(state).toEqual({state: "ok"});
     });
 
     it("should return \"wrong-lang-format\", and wrongly formatted subs ", async () => {
-        const partlyWrongSubs:ISubtitlePresenter[] = [{lang: "deut", title: "Deutsch"}, {lang: "eng", title: "Englisch"}];
-        const state:SubtitleState = await presenter.addVideo(mediaStationId, contentId, mediaPlayerId, 102, "video/mp4", fileInstance, fileName, partlyWrongSubs);
+        videoProps.subtitles = [{lang: "deut", title: "Deutsch"}, {lang: "eng", title: "Englisch"}];
+        const state:SubtitleState = await presenter.addVideo(videoProps);
         expect(state).toEqual({state: "wrong-lang-format", subs: [{lang: "deut", title: "Deutsch"}]});
     });
 
     it("should call the museaClient.cacheMediaStation with correct mediastation-id",async  () => {
-        await presenter.addVideo(mediaStationId, contentId, mediaPlayerId, 211, "video/mp4", fileInstance, fileName, subtitles);
+        await presenter.addVideo(videoProps);
         expect(mockModelMain.museaClient.mediaStationService.cacheMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockModelMain.museaClient.mediaStationService.cacheMediaStation).toHaveBeenCalledWith(mediaStationId);
+        expect(mockModelMain.museaClient.mediaStationService.cacheMediaStation).toHaveBeenCalledWith(videoProps.mediaStationId);
     });
 
     it("should throw an error if a wrong filetype is passed", async () => {
-        await expect(presenter.addVideo(mediaStationId, contentId, mediaPlayerId, 122,"video/mp6", fileInstance, fileName, subtitles)).rejects.toThrow(Error("Wrong file-type: video/mp6"))
+        videoProps.fileType = "video/mp6";
+        await expect(presenter.addVideo(videoProps)).rejects.toThrow(Error("Wrong file-type: video/mp6"))
+    });
+});
+
+describe("checkSubs() ", () => {
+    let subtitles:ISubtitlePresenter[] =  [{lang: "deu", title: "Deutsch"}, {lang: "eng", title: "Englisch"}];
+
+    it("should return state OK if subtitles have the correct format", () => {
+        const state:SubtitleState = presenter.checkSubs(subtitles);
+        expect(state).toEqual({state: "ok"});
+    });
+
+    it("should return \"wrong-lang-format\", and wrongly formatted subs ", () => {
+        subtitles = [{lang: "deut", title: "Deutsch"}, {lang: "eng", title: "Englisch"}];
+        const state:SubtitleState = presenter.checkSubs(subtitles);
+        expect(state).toEqual({state: "wrong-lang-format", subs: [{lang: "deut", title: "Deutsch"}]});
     });
 });
 

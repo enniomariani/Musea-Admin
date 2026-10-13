@@ -6,6 +6,11 @@
       <component v-if="showOptions" :is="fullScreenOptions" :options=activeRegisteredOptions
                  :title="optionsOpenForTitle"
                  @close="closeAll" @option-selected="handleSelectedOption"/>
+      <component v-if="showTwoBtnPopUp" :is="TwoBtnPopUp"
+                 :title="popUpWrongSubLang"
+                 iconNo="cross" iconYes="check"
+                 :btn-text-yes="$t('btnYes')" :btn-text-no="$t('btnNo')" highlightBtn="yes" @yes="handleAcceptWrongSubs"
+                 @no="handleAbortVideoUpload"/>
     </template>
     <template #column-1>
       <navBarLeft :has-sync-btn="true"
@@ -33,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps, onMounted, ref, nextTick} from 'vue';
+import {onMounted, ref, nextTick} from 'vue';
 
 import fullScreenOptions from "renderer/views/components/fullScreenOverlays/FullScreenOptions.vue";
 
@@ -44,16 +49,22 @@ import MainList from "renderer/views/components/uiElements/lists/MainList.vue";
 import {MediaStationPresenter} from "renderer/presenters/MediaStationPresenter.js";
 import {FolderPresenter, IContentMediaInfo} from "renderer/presenters/FolderPresenter.js";
 import {InactivityPresenter} from "renderer/presenters/InactivityPresenter.js";
-import {ContentPresenter, SubtitleState} from "renderer/presenters/ContentPresenter.js";
+import {
+  ContentPresenter,
+  ISubtitlePresenter,
+  IVideoPropsPresenter,
+  SubtitleState
+} from "renderer/presenters/ContentPresenter.js";
 import {useI18n} from 'vue-i18n';
 import Icon from "renderer/views/components/uiElements/Icon.vue";
 import {useInactivity} from "renderer/views/composables/useInactivity.js";
 import {useOverlayManager} from "renderer/views/composables/useOverlayManager.js";
 import AddMediaBtn from "renderer/views/components/uiElements/btns/AddMediaBtn.vue";
-import {ISubtitle, useFilePicker} from "renderer/views/composables/useFilePicker.js";
+import {IMediaInfo, ISubtitle, useFilePicker} from "renderer/views/composables/useFilePicker.js";
 import {useOptions} from "renderer/views/composables/useOptions.js";
 import BasePage from "renderer/views/pages/BasePage.vue";
 import {useSync} from "renderer/views/composables/useSync.js";
+import TwoBtnPopUp from "../components/fullScreenOverlays/popUps/TwoBtnPopUp.vue";
 
 const {t} = useI18n();
 
@@ -72,8 +83,8 @@ const emit = defineEmits(['Exit', 'Back']);
 
 //use composables
 useInactivity(props.inactivityPresenter);
-const {infoText, showOptions, closeInfo, hasOverlays, closeAll} = useOverlayManager();
-const {handleOpenFile} = useFilePicker(infoText, addMedia);
+const {infoText, showOptions, closeInfo, hasOverlays, closeAll, showTwoBtnPopUp} = useOverlayManager();
+const {handleOpenFile} = useFilePicker(infoText, addImage, addVideo);
 const {
   handleOpenOptions, handleSelectedOption, optionsOpenForId,
   optionsOpenForTitle, registerOption, activeRegisteredOptions
@@ -93,6 +104,9 @@ const allMedia = ref<{
 }[]>([]);
 
 registerOption(t('content.deleteMedia'), "delete", true, handleDeleteMedia);
+
+const popUpWrongSubLang = ref();
+let videoProps:IVideoPropsPresenter;
 
 onMounted(() => {
   updateMedia();
@@ -124,33 +138,62 @@ async function handleDeleteMedia() {
   await updateMedia();
 }
 
-async function addMedia(mediaPlayerId: number, fileType: string, fileInstance: File, fileName: string, duration: number, subTitles: ISubtitle[]) {
+async function addImage(mediaInfo:IMediaInfo) {
+  infoText.value += t('content.cachingFile');
+  await props.contentPresenter.addImage(props.mediaStationId, props.contentId, mediaInfo.mediaPlayerId,
+      mediaInfo.fileType, mediaInfo.fileInstance, mediaInfo.fileName);
+  infoText.value = "";
+  await updateMedia();
+}
+
+async function addVideo(mediaInfo:IMediaInfo, duration: number, subtitles: ISubtitle[]) {
   let subState: SubtitleState;
   infoText.value += t('content.cachingFile');
 
-  if (fileType === "image/png" || fileType === "image/jpeg"){
-    await props.contentPresenter.addImage(props.mediaStationId, props.contentId, mediaPlayerId, fileType, fileInstance, fileName);
-    infoText.value = "";
-  } else if (fileType === "video/mp4") {
-    subState = await props.contentPresenter.addVideo(props.mediaStationId, props.contentId, mediaPlayerId, duration, fileType, fileInstance, fileName, subTitles);
+  subState = props.contentPresenter.checkSubs(subtitles as ISubtitlePresenter[]);
 
-    if(subState.state !== "ok"){
-      infoText.value += t('content.subtitleLangNotIsoConform');
+    const videoData = {
+      mediaStationId: props.mediaStationId,
+      contentId: props.contentId,
+      mediaPlayerId: mediaInfo.mediaPlayerId,
+      duration: duration,
+      fileType: mediaInfo.fileType,
+      fileInstance: mediaInfo.fileInstance,
+      fileName: mediaInfo.fileName,
+      subtitles: subtitles as ISubtitlePresenter[],
+    }
+    videoProps = videoData;
 
-      subState.subs.forEach( (sub, i, arr) =>{
-        infoText.value += sub.lang;
-        if(i < arr.length - 1)
-          infoText.value += ", ";
+    if (subState.state !== "ok") {
+
+      popUpWrongSubLang.value = t('content.subtitleLangNotIsoConform');
+
+      subState.subs.forEach((sub, i, arr) => {
+        popUpWrongSubLang.value += sub.lang;
+        if (i < arr.length - 1)
+          popUpWrongSubLang.value += ", ";
       });
 
-      infoText.value += t('content.infoHowToEmbedSubtitles');
+      popUpWrongSubLang.value += t('content.infoHowToEmbedSubtitles');
+      popUpWrongSubLang.value += t('content.importVideoWithCorrectSubs');
 
-      closeInfo(10000);
+      showTwoBtnPopUp.value = true;
     }else
-      infoText.value = "";
-  }
+      await props.contentPresenter.addVideo(videoProps);
+
+  infoText.value = "";
 
   await updateMedia();
+}
+
+async function handleAcceptWrongSubs() {
+  await props.contentPresenter.addVideo(videoProps);
+  await updateMedia();
+  showTwoBtnPopUp.value = false;
+}
+
+function handleAbortVideoUpload() {
+  showTwoBtnPopUp.value = false;
 }
 
 function handleBack() {
