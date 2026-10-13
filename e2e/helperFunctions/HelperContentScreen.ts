@@ -26,6 +26,12 @@ async function addMedia(type:string): Promise<void> {
         filePath = join(__dirname, '../testMedia/test.jpeg');
     else if(type === "video")
         filePath = join(__dirname, '../testMedia/test.mp4');
+    else if(type === "video_subs")
+        filePath = join(__dirname, '../testMedia/test_ENG_DE_subs.mp4');
+    else if(type === "video_subs_broken")
+        filePath = join(__dirname, '../testMedia/test_ENG_DE_subs_broken.mp4');
+    else
+        throw new Error("Unknown media-type: " + type);
 
     const fileUpload = await $('#fileInput');
     await browser.execute(

@@ -9,7 +9,7 @@
   "scripts": {
     "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50%",
     "e2e": "cls && wdio run wdio.conf.js",
-    "e2eOneFile": "cls && wdio --spec e2e/ContentScreenTwoMediaPlayers.e2e.ts",
+    "e2eOneFile": "cls && wdio --spec e2e/ContentScreenOnlyWithController.e2e.ts",
     "dev": "cross-env NODE_ENV=development npm start",
     "start": "electron-forge start",
     "build": "vue-tsc -p ./src/renderer/tsconfig.json --noEmit && vite build && tsc -p ./src/main/tsconfig.json && tsc-alias -p ./src/main/tsconfig.json",
