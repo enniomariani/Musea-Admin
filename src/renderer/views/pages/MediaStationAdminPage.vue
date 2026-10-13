@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps, onMounted, ref, nextTick} from 'vue';
+import {onMounted, ref, nextTick} from 'vue';
 
 import BasePage from "renderer/views/pages/BasePage.vue";
 import MainList from "renderer/views/components/uiElements/lists/MainList.vue";

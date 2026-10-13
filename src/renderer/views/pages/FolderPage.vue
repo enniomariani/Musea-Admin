@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineEmits, defineProps, computed, onMounted} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 
 import MainList from "renderer/views/components/uiElements/lists/MainList.vue";
 import fullScreenOptions from "renderer/views/components/fullScreenOverlays/FullScreenOptions.vue";

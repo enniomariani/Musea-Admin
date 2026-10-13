@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, ref, watch, nextTick} from 'vue';
+import {ref} from 'vue';
 import NavBarBackBtn from "renderer/views/components/uiElements/btns/NavBarBackBtn.vue";
 import NavBarRefreshBtn from "renderer/views/components/uiElements/btns/NavBarRefreshBtn.vue";
 import SearchInput from "renderer/views/components/uiElements/SearchInput.vue";

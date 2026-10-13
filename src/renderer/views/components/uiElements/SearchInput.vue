@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, ref, defineProps, defineExpose} from 'vue';
+import {ref} from 'vue';
 import Icon from "renderer/views/components/uiElements/Icon.vue";
 
 interface Props {

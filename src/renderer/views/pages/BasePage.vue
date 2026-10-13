@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits} from 'vue';
 import fullScreenInfo from "renderer/views/components/fullScreenOverlays/FullScreenInfo.vue";
 import fullScreenInput from "renderer/views/components/fullScreenOverlays/FullScreenInput.vue";
 import {IInputDialogData} from "renderer/views/composables/useOverlayManager.js";

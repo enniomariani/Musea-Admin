@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, ref, watch, onMounted, nextTick} from 'vue'
+import {computed, ref, watch, onMounted, nextTick} from 'vue'
 
 interface Props {
   name: string

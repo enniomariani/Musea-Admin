@@ -23,8 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps} from 'vue';
-
 import DropDown from "renderer/views/components/uiElements/DropDown.vue";
 import Icon from "renderer/views/components/uiElements/Icon.vue";
 

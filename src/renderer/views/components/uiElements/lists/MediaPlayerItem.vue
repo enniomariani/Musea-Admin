@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, onMounted, ref, nextTick} from 'vue';
+import {onMounted, ref, nextTick} from 'vue';
 import Icon from "renderer/views/components/uiElements/Icon.vue";
 
 interface Media{

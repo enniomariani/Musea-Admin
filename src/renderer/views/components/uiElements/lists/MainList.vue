@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineProps, defineEmits, defineExpose, computed} from 'vue';
+import {ref, computed} from 'vue';
 import Icon from "renderer/views/components/uiElements/Icon.vue";
 
 interface Item {

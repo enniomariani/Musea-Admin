@@ -16,11 +16,9 @@
 
 
 <script setup lang="ts">
-import {defineEmits, defineProps, ref} from 'vue';
+import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import Icon from "renderer/views/components/uiElements/Icon.vue";
-
-const {t} = useI18n();
 
 interface Props {
   options: string[]

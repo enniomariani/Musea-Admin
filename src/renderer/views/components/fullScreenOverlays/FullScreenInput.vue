@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineEmits, defineProps, onMounted} from 'vue';
+import {ref, onMounted} from 'vue';
 import BaseBtn from "renderer/views/components/uiElements/btns/BaseBtn.vue";
 import Icon from "renderer/views/components/uiElements/Icon.vue";
 

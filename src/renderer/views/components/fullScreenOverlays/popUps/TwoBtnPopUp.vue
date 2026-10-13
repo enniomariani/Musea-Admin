@@ -27,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps} from 'vue';
 import BasePopUp from "renderer/views/components/fullScreenOverlays/popUps/BasePopUp.vue";
 import BaseBtn from "renderer/views/components/uiElements/btns/BaseBtn.vue";
 import Icon from "renderer/views/components/uiElements/Icon.vue";
