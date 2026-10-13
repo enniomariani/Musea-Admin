@@ -133,10 +133,9 @@ async function addMedia(mediaPlayerId: number, fileType: string, fileInstance: F
     infoText.value = "";
   } else if (fileType === "video/mp4") {
     subState = await props.contentPresenter.addVideo(props.mediaStationId, props.contentId, mediaPlayerId, duration, fileType, fileInstance, fileName, subTitles);
-    console.log("new video updated, sub-state is: ", subState);
 
     if(subState.state !== "ok"){
-      infoText.value += "\nVideo-Datei enthält ungültig benannte Untertitel-Streams:  ";
+      infoText.value += t('content.subtitleLangNotIsoConform');
 
       subState.subs.forEach( (sub, i, arr) =>{
         infoText.value += sub.lang;
@@ -144,7 +143,7 @@ async function addMedia(mediaPlayerId: number, fileType: string, fileInstance: F
           infoText.value += ", ";
       });
 
-      infoText.value += "\n\nBeim Einbetten der Sprachen mit FFmpeg muss das Attribut \"language=\" dem ISO-Standard 6392-T entsprechen.";
+      infoText.value += t('content.infoHowToEmbedSubtitles');
 
       closeInfo(10000);
     }else
