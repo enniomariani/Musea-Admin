@@ -30,7 +30,7 @@ defineProps<Props>();
 
 .info-container {
   width: 500px;
-  height: 200px;
+  height: 300px;
   background-color: var(--color-popup);
   border-radius: var(--radius-popup);
   padding: 32px;
